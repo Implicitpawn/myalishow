@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>Sign in &laquo; Admin</title>
+  <link rel="stylesheet" href="../assets/vendors/bootstrap/css/bootstrap.css">
+  <link rel="stylesheet" href="../assets/css/admin.css">
+  <script src="/assets/vendors/jquery/jquery-1.8.3.min.js"></script>
+  <script>
+    $(function() {
+      $('#code').keyup(function(){
+        var code = $(this).val();
+        $.ajax({
+          url:'../gb/checkCode.php',
+          type:'post',
+          data:{code:code},
+          dataType:'text',
+          success:function(result){
+            if(result == 1) {
+              $('#tishi').html('验证码一致');
+            }else {
+              $('#tishi').html('验证码错误');
+            }
+          }
+        })
+      })
+      $('.btn-primary').click(function(){
+        var email = $('#email').val();
+        var psw = $('#password').val();
+        var code = $('#code').val();
+        // console.log(code);
+        $.ajax({
+          url:'/gb/checkUser.php',
+          type:'post',
+          data:{email:email,
+            psw:psw,
+            code:code
+          },
+          dataType:'text',
+          success:function(date) {
+            console.log(date);
+            if(date == 1) {
+              $('#tishi').html('用户不存在');
+            }
+            else if (date == 2) {
+              $('#tishi').html('用户密码错误');
+            }
+            else if (date == 3) {
+              $('#tishi').html('验证码错误');
+              var img = document.querySelector('#img');
+              img.src = '/gb/gb.php?_=' + Math.random();
+            }
+            else if (date == 4) {
+              // $('#error').html('用户登录成功');
+              // var aa = $('.btn-primary')[0]
+              // aa.href='/admin';
+              // console.log($('.btn-primary'));
+              location.href = '/admin/index.php';
+            }
+          }
+        })
+      })
+    })
+      
+    </script>
+</head>
+<body>
+  <div class="login">
+    <form class="login-wrap" method="POST">
+      <img class="avatar" src="../assets/img/default.png">
+      <!-- 有错误信息时展示 -->
+      <!-- <div class="alert alert-danger">
+        <strong>错误！</strong> 用户名或密码错误！
+      </div> -->
+      <div class="form-group">
+        <!-- <h4 id="error" style="color:red"></h4> -->
+        <label for="email" class="sr-only" >邮箱</label>
+        <input id="email" type="email" name="email" class="form-control" placeholder="邮箱" autofocus>
+      </div>
+      <div class="form-group">
+        <label for="password" class="sr-only">密码</label>
+        <input id="password" type="password" name="psw" class="form-control" placeholder="密码">
+      </div>
+      <div class="form-group">
+        <label for="code" class="sr-only">验证码</label>
+        <input id="code" type="text" name="code" class="form-control" placeholder="验证码">
+      </div>
+      <img src="../gb/gb.php" alt="" onclick="changeImg(this)" id="img"><span id="tishi" style="color:red"></span>
+      <a class="btn btn-primary btn-block" href="javascript:;">登 录</a>
+    </form>
+  </div>
+  <script>
+     function changeImg(obj) {
+        obj.src = '/gb/gb.php?_=' + Math.random();  //随机生成后缀，避免地址重复
+      }
+  </script>
+  
+</body>
+</html>
